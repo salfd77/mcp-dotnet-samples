@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace McpSamples.Shared.Extensions;
 
@@ -19,6 +20,10 @@ public static class HostApplicationBuilderExtensions
     /// <returns>Returns the <see cref="IHost"/> instance.</returns>
     public static IHost BuildApp(this IHostApplicationBuilder builder, bool useStreamableHttp)
     {
+        // Route all ILogger output to stderr so the JSON-RPC stream on stdout
+        // stays clean (fixes "Failed to parse message" warnings in VS Code).
+        builder.Logging.AddConsole(o => o.LogToStandardErrorThreshold = LogLevel.Trace);
+
         if (useStreamableHttp == true)
         {
             builder.Services.AddMcpServer()

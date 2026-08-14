@@ -328,3 +328,10 @@ The outlook-email sample includes additional configurations for:
 - Set up alerts for critical failures
 
 This document serves as the primary reference for development practices and standards within the MCP .NET Samples repository. All contributors should familiarize themselves with these guidelines to ensure consistency and quality across the codebase.
+## Factory (مصنع) — auto-generated, do not edit by hand
+- Catalog: D:\GITHUB\FACTORY\warehouse\catalog.json (summary: catalog.summary.md)
+- Router: agent/skill `factory-skill-router` — use when tooling is unclear
+- Foreman: agent `factory-foreman` — orchestrates routing, dispatch, QA
+- Line scope: D:\GITHUB\FACTORY\assembly-lines\line-repo.scope.json
+- Inject on approval: powershell -File D:\GITHUB\FACTORY\ops\inject-skill.ps1 -Name <id> -Target <repo>
+- Rebuild catalog: node "D:\GITHUB\FACTORY\scripts\catalog\build-catalog.mjs"
