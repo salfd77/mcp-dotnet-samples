@@ -1,0 +1,709 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ModelContextProtocol.AspNetCore</name>
+    </assembly>
+    <members>
+        <member name="T:System.IdHelpers">
+            <summary>
+            Provides helper methods for monotonic ID generation.
+            </summary>
+        </member>
+        <member name="M:System.IdHelpers.CreateMonotonicId(System.DateTimeOffset)">
+            <summary>
+            Creates a strictly monotonically increasing identifier string using 64-bit timestamp ticks
+            and a 64-bit counter, formatted as a 32-character hexadecimal string (GUID-like).
+            </summary>
+            <param name="timestamp">The timestamp to embed in the identifier.</param>
+            <returns>A new strictly monotonically increasing identifier string.</returns>
+            <remarks>
+            <para>
+            This method creates a 128-bit identifier composed of two 64-bit values:
+            - High 64 bits: <see cref="P:System.DateTimeOffset.Ticks"/> from the timestamp
+            - Low 64 bits: A globally monotonically increasing counter
+            </para>
+            <para>
+            The resulting string is strictly monotonically increasing when compared lexicographically,
+            which is required for keyset pagination to work correctly. Unlike <c>Guid.CreateVersion7</c>,
+            which uses random bits for intra-millisecond uniqueness, this implementation guarantees
+            strict ordering for all identifiers regardless of when they were created.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationDefaults">
+            <summary>
+            Represents default values used by MCP authentication.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationDefaults.AuthenticationScheme">
+            <summary>
+            The default value used for authentication scheme name.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationDefaults.DisplayName">
+            <summary>
+            The default value used for authentication scheme display name.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationEvents">
+            <summary>
+            Represents the authentication events for Model Context Protocol.
+            </summary>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationEvents.OnResourceMetadataRequest">
+            <summary>
+            Gets or sets the function that's invoked when resource metadata is requested.
+            </summary>
+            <remarks>
+            This function is called when a resource metadata request is made to the protected resource metadata endpoint.
+            The implementer should set the <see cref="P:ModelContextProtocol.AspNetCore.Authentication.ResourceMetadataRequestContext.ResourceMetadata"/> property
+            to provide the appropriate metadata for the current request.
+            </remarks>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler">
+            <summary>
+            Represents an authentication handler for MCP protocol that adds resource metadata to challenge responses
+            and handles resource metadata endpoint requests.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler.#ctor(Microsoft.Extensions.Options.IOptionsMonitor{ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions},Microsoft.Extensions.Logging.ILoggerFactory,System.Text.Encodings.Web.UrlEncoder)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler"/> class.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler.HandleRequestAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler.GetAbsoluteResourceMetadataUri">
+            <summary>
+            Gets the absolute URI for the resource metadata endpoint.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler.HandleAuthenticateAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationHandler.HandleChallengeAsync(Microsoft.AspNetCore.Authentication.AuthenticationProperties)">
+            <inheritdoc />
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions">
+            <summary>
+            Represents options for the MCP authentication handler.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions"/> class.
+            </summary>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions.Events">
+            <summary>
+            Gets or sets the events used to handle authentication events.
+            </summary>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions.ResourceMetadataUri">
+            <summary>
+            Gets or sets the URI to the resource metadata document.
+            </summary>
+            <remarks>
+            This URI is included in the WWW-Authenticate header when a 401 response is returned.
+            When <see langword="null"/>, the handler automatically uses the default
+            <c>/.well-known/oauth-protected-resource/&lt;resource-path&gt;</c> endpoint that mirrors the requested resource path.
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions.ResourceMetadata">
+            <summary>
+            Gets or sets the protected resource metadata.
+            </summary>
+            <remarks>
+            This contains the OAuth metadata for the protected resource, including authorization servers,
+            supported scopes, and other information needed for clients to authenticate.
+            </remarks>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.Authentication.ResourceMetadataRequestContext">
+            <summary>
+            Represents the context for resource metadata request events.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.Authentication.ResourceMetadataRequestContext.#ctor(Microsoft.AspNetCore.Http.HttpContext,Microsoft.AspNetCore.Authentication.AuthenticationScheme,ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ModelContextProtocol.AspNetCore.Authentication.ResourceMetadataRequestContext"/> class.
+            </summary>
+            <param name="context">The HTTP context.</param>
+            <param name="scheme">The authentication scheme.</param>
+            <param name="options">The authentication options.</param>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.Authentication.ResourceMetadataRequestContext.ResourceMetadata">
+            <summary>
+            Gets or sets the protected resource metadata for the current request.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.AuthorizationFilterSetup">
+            <summary>
+            Evaluates authorization policies from endpoint metadata.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.AuthorizationFilterSetup.#ctor(Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider)">
+            <summary>
+            Evaluates authorization policies from endpoint metadata.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.AuthorizationFilterSetup.FilterAuthorizedItemsAsync``1(System.Collections.Generic.IList{``0},System.Func{``0,ModelContextProtocol.Server.IMcpServerPrimitive},System.Security.Claims.ClaimsPrincipal,System.IServiceProvider,System.Object)">
+            <summary>
+            Filters a collection of items based on authorization policies in their metadata.
+            For list operations where we need to filter results by authorization.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.AuthorizationFilterSetup.CombineAsync(Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider,System.Collections.Generic.IReadOnlyList{System.Object})">
+            <summary>
+            Combines authorization policies and requirements from endpoint metadata without considering <see cref="T:Microsoft.AspNetCore.Authorization.IAllowAnonymous"/>.
+            </summary>
+            <param name="policyProvider">The authorization policy provider.</param>
+            <param name="endpointMetadata">The endpoint metadata collection.</param>
+            <returns>The combined authorization policy, or null if no authorization is required.</returns>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.DistributedCacheEventStreamStoreOptionsSetup">
+            <summary>
+            Configures <see cref="T:ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions"/> by resolving
+            the <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> from DI when not explicitly set.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.DistributedCacheEventStreamStoreOptionsSetup.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache)">
+            <summary>
+            Configures <see cref="T:ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions"/> by resolving
+            the <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> from DI when not explicitly set.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.DistributedCacheEventStreamStoreOptionsValidator">
+            <summary>
+            Validates that <see cref="P:ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions.Cache"/> is set.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.HttpServerTransportOptions">
+            <summary>
+            Represents configuration options for <see cref="M:McpEndpointRouteBuilderExtensions.MapMcp"/>,
+            which implements the Streamable HTTP transport for the Model Context Protocol.
+            See the protocol specification for details on the Streamable HTTP transport. <see href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#streamable-http"/>
+            </summary>
+            <remarks>
+            For details on the Streamable HTTP transport, see the <see href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#streamable-http">protocol specification</see>.
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.ConfigureSessionOptions">
+            <summary>
+            Gets or sets an optional asynchronous callback to configure per-session <see cref="T:ModelContextProtocol.Server.McpServerOptions"/>
+            with access to the <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> of the request that initiated the session.
+            </summary>
+            <remarks>
+            In stateful mode (the default), this callback is invoked once per session when the client sends the
+            <c>initialize</c> request. In <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.Stateless"/> mode, it is invoked on <b>every HTTP request</b>
+            because each request creates a fresh server context.
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.RunSessionHandler">
+            <summary>
+            Gets or sets an optional asynchronous callback for running new MCP sessions manually.
+            </summary>
+            <remarks>
+            This callback is useful for running logic before a session starts and after it completes.
+            <para>
+            The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> parameter comes from the request that initiated the session (e.g., the
+            initialize request) and may not be usable after <see cref="M:ModelContextProtocol.Server.McpServer.RunAsync(System.Threading.CancellationToken)"/> starts, since that
+            request will have already completed.
+            </para>
+            <para>
+            Consider using <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.ConfigureSessionOptions"/> instead, which provides access to the
+            <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> of the initializing request with fewer known issues.
+            </para>
+            <para>
+            This API is experimental and may be removed or change signatures in a future release.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.Stateless">
+            <summary>
+            Gets or sets a value that indicates whether the server runs in a stateless mode that doesn't track state between requests,
+            allowing for load balancing without session affinity.
+            </summary>
+            <value>
+            <see langword="true"/> if the server runs in a stateless mode; <see langword="false"/> if the server tracks state between requests. The default is <see langword="false"/>.
+            </value>
+            <remarks>
+            If <see langword="true"/>, <see cref="P:ModelContextProtocol.McpSession.SessionId"/> will be null, and the "MCP-Session-Id" header will not be used,
+            the <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.RunSessionHandler"/> will be called once for each request, and the "/sse" endpoint will be disabled.
+            Unsolicited server-to-client messages and all server-to-client requests are also unsupported, because any responses
+            might arrive at another ASP.NET Core application process.
+            Client sampling, elicitation, and roots capabilities are also disabled in stateless mode, because the server cannot make requests.
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.EnableLegacySse">
+            <summary>
+            Gets or sets a value that indicates whether the server maps legacy SSE endpoints (<c>/sse</c> and <c>/message</c>)
+            for backward compatibility with clients that do not support the Streamable HTTP transport.
+            </summary>
+            <value>
+            <see langword="true"/> to map the legacy SSE endpoints; <see langword="false"/> to disable them. The default is <see langword="false"/>.
+            </value>
+            <remarks>
+            <para>
+            The legacy SSE transport separates request and response channels: clients POST JSON-RPC messages
+            to <c>/message</c> and receive responses through a long-lived GET SSE stream on <c>/sse</c>.
+            Because the POST endpoint returns <c>202 Accepted</c> immediately, there is no HTTP-level
+            backpressure on handler concurrency — unlike Streamable HTTP, where each POST is held open
+            until the handler responds.
+            </para>
+            <para>
+            Use Streamable HTTP instead whenever possible. If you must support legacy SSE clients,
+            enable this property only for completely trusted clients in isolated processes, and apply
+            HTTP rate-limiting middleware and reverse proxy limits to compensate for the lack of
+            built-in backpressure.
+            </para>
+            <para>
+            Setting this to <see langword="true"/> while <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.Stateless"/> is also <see langword="true"/>
+            throws an <see cref="T:System.InvalidOperationException"/> at startup, because SSE requires in-memory session state.
+            </para>
+            <para>
+            This property can also be enabled via the <c>ModelContextProtocol.AspNetCore.EnableLegacySse</c>
+            <see cref="T:System.AppContext"/> switch.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.EventStreamStore">
+            <summary>
+            Gets or sets the event store for resumability support.
+            When set, events are stored and can be replayed when clients reconnect with a Last-Event-ID header.
+            </summary>
+            <remarks>
+            When configured, the server will:
+            <list type="bullet">
+            <item><description>Generate unique event IDs for each SSE message</description></item>
+            <item><description>Store events for later replay</description></item>
+            <item><description>Replay missed events when a client reconnects with a Last-Event-ID header</description></item>
+            <item><description>Send priming events to establish resumability before any actual messages</description></item>
+            </list>
+            <para>
+            This can be set directly, or an <see cref="T:ModelContextProtocol.Server.ISseEventStreamStore"/> can be registered in DI.
+            If this property is not set, the server will attempt to resolve an <see cref="T:ModelContextProtocol.Server.ISseEventStreamStore"/> from DI.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.SessionMigrationHandler">
+            <summary>
+            Gets or sets the session migration handler for cross-instance session migration.
+            </summary>
+            <remarks>
+            <para>
+            When configured, the server will support session migration between instances.
+            If a request arrives with a session ID that is not found locally, the handler
+            is consulted to determine if the session can be migrated from another instance.
+            </para>
+            <para>
+            This can be set directly, or an <see cref="T:ModelContextProtocol.AspNetCore.ISessionMigrationHandler"/> can be registered in DI.
+            If this property is not set, the server will attempt to resolve an <see cref="T:ModelContextProtocol.AspNetCore.ISessionMigrationHandler"/> from DI.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.PerSessionExecutionContext">
+            <summary>
+            Gets or sets a value that indicates whether the server uses a single execution context for the entire session.
+            </summary>
+            <value>
+            <see langword="true"/> if the server uses a single execution context for the entire session; otherwise, <see langword="false"/>. The default is <see langword="false"/>.
+            </value>
+            <remarks>
+            If <see langword="false"/>, handlers like tools get called with the <see cref="T:System.Threading.ExecutionContext"/>
+            belonging to the corresponding HTTP request, which can change throughout the MCP session.
+            If <see langword="true"/>, handlers will get called with the same <see cref="T:System.Threading.ExecutionContext"/>
+            used to call <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.ConfigureSessionOptions" /> and <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.RunSessionHandler"/>.
+            Enabling a per-session <see cref="T:System.Threading.ExecutionContext"/> can be useful for setting <see cref="T:System.Threading.AsyncLocal`1"/> variables
+            that persist for the entire session, but it prevents you from using IHttpContextAccessor in handlers.
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.IdleTimeout">
+            <summary>
+            Gets or sets the duration of time the server will wait between any active requests before timing out an MCP session.
+            </summary>
+            <value>
+            The amount of time the server waits between any active requests before timing out an MCP session. The default is 2 hours.
+            </value>
+            <remarks>
+            <para>
+            This value is checked in the background every 5 seconds. A client trying to resume a session will receive a 404 status code
+            and should restart their session. A client can keep their session open by keeping a GET request open.
+            </para>
+            <para>
+            Legacy SSE sessions (when <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.EnableLegacySse"/> is enabled) are not subject to this timeout — their lifetime is
+            tied to the open GET <c>/sse</c> request, and they are removed immediately when the client disconnects.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.MaxIdleSessionCount">
+            <summary>
+            Gets or sets the maximum number of idle sessions to track in memory. This value is used to limit the number of sessions that can be idle at once.
+            </summary>
+            <value>
+            The maximum number of idle sessions to track in memory. The default is 10,000 sessions.
+            </value>
+            <remarks>
+            <para>
+            Past this limit, the server logs a critical error and terminates the oldest idle sessions, even if they have not reached
+            their <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.IdleTimeout"/>, until the idle session count is below this limit. Sessions with any active HTTP request
+            are not considered idle and don't count towards this limit.
+            </para>
+            <para>
+            Legacy SSE sessions (when <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.EnableLegacySse"/> is enabled) are never considered idle because their lifetime is
+            tied to the open GET <c>/sse</c> request. They are not subject to <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.IdleTimeout"/> or this limit — they exist
+            exactly as long as the SSE connection is open.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.TimeProvider">
+            <summary>
+            Gets or sets the time provider that's used for testing the <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.IdleTimeout"/>.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.HttpServerTransportOptionsSetup">
+            <summary>
+            Post-configures <see cref="T:ModelContextProtocol.AspNetCore.HttpServerTransportOptions"/> by resolving services from DI
+            when they haven't been explicitly set on the options.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.HttpServerTransportOptionsSetup.#ctor(System.IServiceProvider)">
+            <summary>
+            Post-configures <see cref="T:ModelContextProtocol.AspNetCore.HttpServerTransportOptions"/> by resolving services from DI
+            when they haven't been explicitly set on the options.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.ISessionMigrationHandler">
+            <summary>
+            Provides hooks for persisting and restoring MCP session initialization data,
+            enabling session migration across server instances.
+            </summary>
+            <remarks>
+            <para>
+            When an MCP server is horizontally scaled, stateful sessions are bound to a single process.
+            If that process restarts or scales down, the session is lost. By implementing this interface
+            and registering it with DI, you can persist the initialization handshake data and restore it
+            when a client reconnects to a different server instance with its existing <c>Mcp-Session-Id</c>.
+            </para>
+            <para>
+            This does <strong>not</strong> solve the session-affinity problem for in-flight server-to-client
+            requests (such as sampling or elicitation). Responses to those requests must still be routed to
+            the process that created the request. This interface only enables migration of idle sessions
+            by persisting the data established during the initialization handshake.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.ISessionMigrationHandler.OnSessionInitializedAsync(Microsoft.AspNetCore.Http.HttpContext,System.String,ModelContextProtocol.Protocol.InitializeRequestParams,System.Threading.CancellationToken)">
+            <summary>
+            Called after a session has been successfully initialized via the MCP initialization handshake.
+            </summary>
+            <remarks>
+            Use this to persist the <paramref name="initializeParams"/> (which includes client capabilities,
+            client info, and protocol version) to an external store so the session can be migrated to
+            another server instance later via <see cref="M:ModelContextProtocol.AspNetCore.ISessionMigrationHandler.AllowSessionMigrationAsync(Microsoft.AspNetCore.Http.HttpContext,System.String,System.Threading.CancellationToken)"/>.
+            </remarks>
+            <param name="context">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> for the initialization request.</param>
+            <param name="sessionId">The unique identifier for the session.</param>
+            <param name="initializeParams">The initialization parameters sent by the client during the handshake.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.ValueTask"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.ISessionMigrationHandler.AllowSessionMigrationAsync(Microsoft.AspNetCore.Http.HttpContext,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Called when a request arrives with an <c>Mcp-Session-Id</c> that the current server doesn't recognize.
+            </summary>
+            <remarks>
+            <para>
+            Return the original <see cref="T:ModelContextProtocol.Protocol.InitializeRequestParams"/> to allow the session to be migrated
+            to this server instance, or <see langword="null"/> to reject the request (returning a 404 to the client).
+            </para>
+            <para>
+            Implementations should validate that the request is authorized, for example by checking
+            <see cref="P:Microsoft.AspNetCore.Http.HttpContext.User"/>, to ensure the caller is permitted to migrate the session.
+            </para>
+            </remarks>
+            <param name="context">The <see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> for the request with the unrecognized session ID.</param>
+            <param name="sessionId">The session ID from the request that was not found on this server.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns>
+            The original <see cref="T:ModelContextProtocol.Protocol.InitializeRequestParams"/> if migration is allowed,
+            or <see langword="null"/> to reject the request.
+            </returns>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.SseEventStreamReaderExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:ModelContextProtocol.Server.ISseEventStreamReader"/>.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.SseEventStreamReaderExtensions.CopyToAsync(ModelContextProtocol.Server.ISseEventStreamReader,System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>
+            Copies all events from the reader to the destination stream in SSE format.
+            </summary>
+            <param name="reader">The event stream reader to copy events from.</param>
+            <param name="destination">The destination stream to write SSE-formatted events to.</param>
+            <param name="cancellationToken">A token to cancel the operation.</param>
+            <returns>A task that represents the asynchronous copy operation.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="reader"/> or <paramref name="destination"/> is null.</exception>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.StatefulSessionManager.PruneIdleSessionsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Performs a single pass of idle session pruning, removing sessions that exceed the idle timeout
+            or when the maximum idle session count is exceeded.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.StatefulSessionManager.DisposeAllSessionsAsync">
+            <summary>
+            Disposes all sessions in the manager, typically called during graceful shutdown.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.StatefulSessionManager.__LogIdleSessionTimeoutStruct">
+            <summary> This API supports the logging infrastructure and is not intended to be used directly from your code. It is subject to change in the future. </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.StatefulSessionManager.__LogIdleSessionLimitStruct">
+            <summary> This API supports the logging infrastructure and is not intended to be used directly from your code. It is subject to change in the future. </summary>
+        </member>
+        <member name="T:ModelContextProtocol.AspNetCore.StatefulSessionManager.__LogTooManyIdleSessionsClosingConcurrentlyStruct">
+            <summary> This API supports the logging infrastructure and is not intended to be used directly from your code. It is subject to change in the future. </summary>
+        </member>
+        <member name="F:ModelContextProtocol.AspNetCore.StreamableHttpHandler.s_supportedProtocolVersions">
+            <summary>
+            All protocol versions supported by this implementation.
+            Keep in sync with McpSessionHandler.SupportedProtocolVersions in ModelContextProtocol.Core.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.StreamableHttpHandler.ValidateProtocolVersionHeader(Microsoft.AspNetCore.Http.HttpContext,System.String@)">
+            <summary>
+            Validates the MCP-Protocol-Version header if present. A missing header is allowed for backwards compatibility,
+            but an invalid or unsupported value must be rejected with 400 Bad Request per the MCP spec.
+            </summary>
+        </member>
+        <member name="M:ModelContextProtocol.AspNetCore.StreamableHttpSession.EnsureStartedAsync(System.Threading.CancellationToken)">
+            <summary>
+            Ensures the session is registered with the session manager without acquiring a reference.
+            No-ops if the session is already started.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.Experimentals">
+            <summary>
+            Defines diagnostic IDs, messages, and URLs for APIs annotated with <see cref="T:System.Diagnostics.CodeAnalysis.ExperimentalAttribute"/>.
+            </summary>
+            <remarks>
+            Experimental diagnostic IDs are grouped by category:
+            <list type="bullet">
+            <item><description>
+            <c>MCPEXP001</c> covers APIs related to experimental features in the MCP specification itself,
+            such as Tasks and Extensions. These APIs may change as the specification evolves.
+            </description></item>
+            <item><description>
+            <c>MCPEXP002</c> covers experimental SDK APIs that are unrelated to the MCP specification,
+            such as subclassing internal types or SDK-specific extensibility hooks. These APIs may
+            change or be removed based on SDK design feedback.
+            </description></item>
+            </list>
+            <para>
+            When an experimental API is associated with an experimental specification, the message
+            should refer to the specification version that introduces the feature and the SEP
+            when available. If there is a SEP associated with the experimental API, the Url should
+            point to the SEP issue.
+            </para>
+            <para>
+            Experimental diagnostic IDs are in the format MCPEXP###.
+            </para>
+            <para>
+            Diagnostic IDs cannot be reused when experimental API are removed or promoted to stable.
+            This ensures that users do not suppress warnings for new diagnostics with existing
+            suppressions that might be left in place from prior uses of the same diagnostic ID.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Tasks_DiagnosticId">
+            <summary>
+            Diagnostic ID for the experimental MCP Tasks feature.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Tasks_Message">
+            <summary>
+            Message for the experimental MCP Tasks feature.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Tasks_Url">
+            <summary>
+            URL for the experimental MCP Tasks feature.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Extensions_DiagnosticId">
+            <summary>
+            Diagnostic ID for the experimental MCP Extensions feature.
+            </summary>
+            <remarks>
+            This uses the same diagnostic ID as <see cref="F:ModelContextProtocol.Experimentals.Tasks_DiagnosticId"/> because both
+            Tasks and Extensions are covered by the same MCPEXP001 diagnostic for experimental
+            MCP features. Having separate constants improves code clarity while maintaining a
+            single diagnostic suppression point.
+            </remarks>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Extensions_Message">
+            <summary>
+            Message for the experimental MCP Extensions feature.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Extensions_Url">
+            <summary>
+            URL for the experimental MCP Extensions feature.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Subclassing_DiagnosticId">
+            <summary>
+            Diagnostic ID for experimental SDK APIs unrelated to the MCP specification,
+            such as subclassing <c>McpClient</c>/<c>McpServer</c> or referencing <c>RunSessionHandler</c>.
+            </summary>
+            <remarks>
+            This diagnostic ID covers experimental SDK-level extensibility APIs. All constants
+            in this group share the same diagnostic ID so users need only one suppression point
+            for SDK design preview features.
+            </remarks>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Subclassing_Message">
+            <summary>
+            Message for experimental subclassing of McpClient and McpServer.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.Subclassing_Url">
+            <summary>
+            URL for experimental subclassing of McpClient and McpServer.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.RunSessionHandler_DiagnosticId">
+            <summary>
+            Diagnostic ID for the experimental <c>RunSessionHandler</c> API.
+            </summary>
+            <remarks>
+            This uses the same diagnostic ID as <see cref="F:ModelContextProtocol.Experimentals.Subclassing_DiagnosticId"/> because
+            both are experimental SDK APIs unrelated to the MCP specification.
+            </remarks>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.RunSessionHandler_Message">
+            <summary>
+            Message for the experimental <c>RunSessionHandler</c> API.
+            </summary>
+        </member>
+        <member name="F:ModelContextProtocol.Experimentals.RunSessionHandler_Url">
+            <summary>
+            URL for the experimental <c>RunSessionHandler</c> API.
+            </summary>
+        </member>
+        <member name="T:ModelContextProtocol.Obsoletions">
+            <summary>
+            Defines diagnostic IDs, messages, and URLs for APIs annotated with <see cref="T:System.ObsoleteAttribute"/>.
+            </summary>
+            <remarks>
+            When a deprecated API is associated with a specification change, the message
+            should refer to the specification version that introduces the change and the SEP
+            when available. If there is a SEP associated with the experimental API, the Url should
+            point to the SEP issue.
+            <para>
+            Obsolete diagnostic IDs are in the format MCP9###.
+            </para>
+            <para>
+            Diagnostic IDs cannot be reused when obsolete APIs are removed or restored.
+            This ensures that users do not suppress warnings for new diagnostics with existing
+            suppressions that might be left in place from prior uses of the same diagnostic ID.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.McpAuthenticationExtensions">
+            <summary>
+            Extension methods for adding MCP authentication support to ASP.NET Core applications.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.McpAuthenticationExtensions.AddMcp(Microsoft.AspNetCore.Authentication.AuthenticationBuilder,System.Action{ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions})">
+            <summary>
+            Adds MCP authentication support to the application.
+            </summary>
+            <param name="builder">The authentication builder.</param>
+            <param name="configureOptions">An action to configure MCP authentication options.</param>
+            <returns>The authentication builder for chaining.</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.McpAuthenticationExtensions.AddMcp(Microsoft.AspNetCore.Authentication.AuthenticationBuilder,System.String,System.String,System.Action{ModelContextProtocol.AspNetCore.Authentication.McpAuthenticationOptions})">
+            <summary>
+            Adds MCP authentication support to the application with a custom scheme name.
+            </summary>
+            <param name="builder">The authentication builder.</param>
+            <param name="authenticationScheme">The authentication scheme name to use.</param>
+            <param name="displayName">The display name for the authentication scheme.</param>
+            <param name="configureOptions">An action to configure MCP authentication options.</param>
+            <returns>The authentication builder for chaining.</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.HttpMcpServerBuilderExtensions">
+            <summary>
+            Provides methods for configuring HTTP MCP servers via dependency injection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.HttpMcpServerBuilderExtensions.WithHttpTransport(Microsoft.Extensions.DependencyInjection.IMcpServerBuilder,System.Action{ModelContextProtocol.AspNetCore.HttpServerTransportOptions})">
+            <summary>
+            Adds the services necessary for <see cref="M:McpEndpointRouteBuilderExtensions.MapMcp"/>
+            to handle MCP requests and sessions using the MCP Streamable HTTP transport.
+            </summary>
+            <param name="builder">The builder instance.</param>
+            <param name="configureOptions">Configures options for the Streamable HTTP transport. This allows configuring per-session
+            <see cref="T:ModelContextProtocol.Server.McpServerOptions"/> and running logic before and after a session.</param>
+            <returns>The builder provided in <paramref name="builder"/>.</returns>
+            <remarks>For more information on configuring the underlying HTTP server
+            to control things like port binding and custom TLS certificates, see the <see href="https://learn.microsoft.com/aspnet/core/fundamentals/minimal-apis">Minimal APIs quick reference</see>.
+            </remarks>
+            <exception cref="T:System.ArgumentNullException"><paramref name="builder"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.HttpMcpServerBuilderExtensions.AddAuthorizationFilters(Microsoft.Extensions.DependencyInjection.IMcpServerBuilder)">
+            <summary>
+            Adds authorization filters to support <see cref="T:Microsoft.AspNetCore.Authorization.AuthorizeAttribute"/>
+            on MCP server tools, prompts, and resources. This method should always be called when using
+            ASP.NET Core integration to ensure proper authorization support.
+            </summary>
+            <param name="builder">The builder instance.</param>
+            <returns>The builder provided in <paramref name="builder"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="builder"/> is <see langword="null"/>.</exception>
+            <remarks>
+            This method automatically configures authorization filters for all MCP server handlers. These filters respect
+            authorization attributes such as <see cref="T:Microsoft.AspNetCore.Authorization.AuthorizeAttribute"/>
+            and <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/>.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.HttpMcpServerBuilderExtensions.WithDistributedCacheEventStreamStore(Microsoft.Extensions.DependencyInjection.IMcpServerBuilder,System.Action{ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions})">
+            <summary>
+            Registers a <see cref="T:ModelContextProtocol.Server.DistributedCacheEventStreamStore"/> as the <see cref="T:ModelContextProtocol.Server.ISseEventStreamStore"/> for SSE resumability.
+            </summary>
+            <param name="builder">The builder instance.</param>
+            <param name="configureOptions">An optional action to configure <see cref="T:ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions"/>.</param>
+            <returns>The builder provided in <paramref name="builder"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="builder"/> is <see langword="null"/>.</exception>
+            <remarks>
+            <para>
+            An <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> implementation must be registered in the service collection before calling this method.
+            The registered cache is automatically assigned to <see cref="P:ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions.Cache"/>.
+            </para>
+            <para>
+            To use a specific <see cref="T:Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> instance instead of the one registered in DI,
+            set the <see cref="P:ModelContextProtocol.Server.DistributedCacheEventStreamStoreOptions.Cache"/> property in the <paramref name="configureOptions"/> callback.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Builder.McpEndpointRouteBuilderExtensions">
+            <summary>
+            Provides extension methods for <see cref="T:Microsoft.AspNetCore.Routing.IEndpointRouteBuilder"/> to add MCP endpoints.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.McpEndpointRouteBuilderExtensions.MapMcp(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder,System.String)">
+            <summary>
+            Sets up endpoints for handling MCP Streamable HTTP transport.
+            </summary>
+            <param name="endpoints">The web application to attach MCP HTTP endpoints.</param>
+            <param name="pattern">The route pattern prefix to map to.</param>
+            <returns>Returns a builder for configuring additional endpoint conventions like authorization policies.</returns>
+            <exception cref="T:System.InvalidOperationException">The required MCP services have not been registered. Ensure <see cref="M:Microsoft.Extensions.DependencyInjection.HttpMcpServerBuilderExtensions.WithHttpTransport(Microsoft.Extensions.DependencyInjection.IMcpServerBuilder,System.Action{ModelContextProtocol.AspNetCore.HttpServerTransportOptions})"/> has been called during application startup.</exception>
+            <remarks>
+            For details about the Streamable HTTP transport, see the <see href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#streamable-http">2025-11-25 protocol specification</see>.
+            When legacy SSE is enabled via <see cref="P:ModelContextProtocol.AspNetCore.HttpServerTransportOptions.EnableLegacySse"/>, this method also maps legacy SSE endpoints at the path "/sse" and "/message". For details about the HTTP with SSE transport, see the <see href="https://modelcontextprotocol.io/specification/2024-11-05/basic/transports#http-with-sse">2024-11-05 protocol specification</see>.
+            </remarks>
+        </member>
+    </members>
+</doc>

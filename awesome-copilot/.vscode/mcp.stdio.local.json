@@ -1,11 +1,4 @@
 {
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "consoleapp-project-path",
-      "description": "The absolute path to the console app project Directory"
-    }
-  ],
   "servers": {
     "awesome-copilot": {
       "type": "stdio",
@@ -13,7 +6,7 @@
       "args": [
         "run",
         "--project",
-        "${input:consoleapp-project-path}"
+        "${workspaceFolder}/awesome-copilot/src/McpSamples.AwesomeCopilot.HybridApp/McpSamples.AwesomeCopilot.HybridApp.csproj"
       ]
     }
   }
