@@ -1,0 +1,8 @@
+{
+  "io.github.github/github-mcp-server": {
+    "type": "http",
+    "url": "https://api.githubcopilot.com/mcp/",
+    "gallery": "https://api.mcp.github.com",
+    "version": "1.9.0"
+  }
+}
